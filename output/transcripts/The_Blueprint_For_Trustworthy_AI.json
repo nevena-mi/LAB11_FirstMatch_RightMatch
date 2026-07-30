@@ -1,0 +1,8 @@
+{
+  "source": "podcast",
+  "filename": "The_Blueprint_For_Trustworthy_AI.mp3",
+  "transcription_model": "whisper-1",
+  "language": "english",
+  "duration": 937.52001953125,
+  "speaker": null
+}

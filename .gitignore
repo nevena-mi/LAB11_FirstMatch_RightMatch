@@ -1,0 +1,9 @@
+.env
+
+*.pdf
+*.m4a
+
+__pycache__/
+*.pyc
+
+lab_intro_first_match_ne_right_match.md
