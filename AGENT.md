@@ -18,7 +18,7 @@ Vector Store
 ↓
 Retrieval
 ↓
-Reranking (planned)
+LLM Relevance Scoring
 ↓
 LLM Response (planned)
 
@@ -31,6 +31,7 @@ Current implementation status:
 - Step 6 is complete: OpenAI-based chunk embeddings with preserved traceability.
 - Step 7 is complete and validated: Pinecone vector store integration, metadata sanitization, and notebook verification.
 - Step 8 is complete and validated: baseline Pinecone retrieval with stable traceability and repeated-query consistency.
+- Step 9 is complete and validated: LLM relevance scoring over baseline retrieval candidates with preserved traceability.
 - Later stages are not implemented yet.
 
 # Architecture
@@ -51,11 +52,11 @@ Vector Store
 ↓
 Retrieval
 ↓
-Reranking (planned)
+LLM Relevance Scoring
 ↓
 LLM Response (planned)
 
-The implemented pipeline currently includes embeddings, a Pinecone vector store layer, and baseline retrieval. Reranking and later stages are intentionally deferred to keep the lab incremental and easy to reason about.
+The implemented pipeline currently includes embeddings, a Pinecone vector store layer, baseline retrieval, and an LLM relevance scoring pass. Later stages are intentionally deferred to keep the lab incremental and easy to reason about.
 
 # Implemented Components
 
@@ -100,6 +101,25 @@ Wraps query embedding and Pinecone similarity search for baseline retrieval.
 - Purpose: embed a user query and return the most relevant stored chunks.
 - Output: `RetrievedChunk` objects.
 - Traceability: preserves `chunk_id`, `document_id`, `source_id`, `document_type`, `text`, `metadata`, and similarity score.
+
+## `src/relevance_scoring.py`
+Scores baseline retrieval results with an LLM while keeping traceability intact.
+- Purpose: ask the model how relevant each retrieved chunk is to the query.
+- Output: `ScoredChunk` objects.
+- Traceability: preserves the original chunk and document identifiers, source IDs, document types, metadata, and the original Pinecone similarity score.
+
+## Validation result
+- A notebook validation cell was appended to score the trustworthiness query against the baseline retrieval results.
+- Local stubbed-client validation confirmed that `score_relevance()` preserves chunk IDs, document IDs, source IDs, document types, metadata, and retrieval scores.
+- The validation path also confirmed that relevance scores and optional reasoning are returned together.
+- Repeated calls with the same input produced the same chunk order and the same parsed scores in the local validation check.
+
+## Implementation decisions and rationale
+- The OpenAI Responses API was used with structured JSON output so the scoring layer stays easy to parse and debug.
+- The scoring model is configurable, with `gpt-4o-mini` as the default for the lab.
+- The model is instructed to return scores from 0.0 to 1.0 to keep the output simple and comparable.
+- The output preserves the baseline retrieval order rather than reordering chunks, because reranking is a separate later step.
+- `seed=42` and `temperature=0` were chosen to keep repeated runs as stable as possible for an educational lab.
 
 # Embeddings
 
@@ -186,14 +206,12 @@ The Pinecone layer is kept intentionally small and env-driven.
 - A default cosine metric was used for the dense vector index because the pipeline is using OpenAI dense embeddings.
 - A short sleep is used in the notebook validation cell to reduce the chance of querying before Pinecone has indexed the upserted vectors.
 - Metadata sanitization removes `None` values before upsert so Pinecone accepts the payload while preserving all usable traceability fields.
-- Baseline retrieval stays separate from reranking so the lab can validate retrieval quality before introducing more complex ranking logic.
+- Baseline retrieval stays separate from relevance scoring so the lab can validate retrieval quality before introducing more complex scoring logic.
 
 ## Files changed
-- `src/retrieval.py`
+- `src/relevance_scoring.py`
 - `relevance_scoring_rerankers.ipynb`
 - `implementation_plan.md`
-- `src/vector_store.py`
-- `requirements.txt`
 - `AGENT.md`
 
 # Data Models
@@ -239,6 +257,20 @@ The Pinecone layer is kept intentionally small and env-driven.
   - `document_id`
 - Used by: `src/chunking.py` and later embedding / retrieval stages.
 
+## `ScoredChunk`
+- Purpose: retrieval result annotated with LLM relevance scoring.
+- Important fields:
+  - `chunk_id`
+  - `document_id`
+  - `text`
+  - `metadata`
+  - `source_id`
+  - `document_type`
+  - `retrieval_score`
+  - `relevance_score`
+  - `reasoning`
+- Used by: `src/relevance_scoring.py` and the notebook validation cell.
+
 # Design Decisions
 
 - Use dataclasses for the main document types.
@@ -273,6 +305,7 @@ Each new feature is validated before the step is marked complete.
 - Chunking is validated by checking chunk counts, chunk IDs, text previews, and metadata preservation.
 - Embeddings are validated by checking vector dimensions, model choice, chunk identity preservation, and metadata preservation.
 - Pinecone integration is validated by confirming index creation, successful upserts, matching retrieved IDs, and preserved metadata.
+- LLM relevance scoring is validated by checking the returned relevance scores, preserved retrieval scores, traceability fields, and repeatability on the same query.
 
 # Coding Style
 
@@ -286,7 +319,7 @@ Each new feature is validated before the step is marked complete.
 # Future Roadmap
 
 Remaining stages:
-- reranking
+- dedicated reranker
 - evaluation
 
 # Instructions for Future Codex Sessions

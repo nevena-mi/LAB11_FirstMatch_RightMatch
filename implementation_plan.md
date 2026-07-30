@@ -8,7 +8,7 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 - [x] Step 6 - Embeddings
 - [x] Step 7 - Vector Store
 - [x] Step 8 - Baseline Retrieval
-- [ ] Step 9 - LLM Relevance Scoring
+- [x] Step 9 - LLM Relevance Scoring
 - [ ] Step 10 - Dedicated Reranker
 - [ ] Step 11 - Metadata Filtering
 - [ ] Step 12 - Complete RAG Pipeline
@@ -82,11 +82,11 @@ Output: Top-k candidate chunks with scores and metadata
 What to do: Implement plain similarity retrieval as the baseline control path.
 Test before continuing: Run one EU AI Act query and one podcast-related query, then verify the results are sensible and traceable back to source documents.
 9. LLM Relevance Scoring
-Module(s): src/rag_pipeline.py and/or src/retrieval.py
+Module(s): src/relevance_scoring.py
 Input: Query plus baseline retrieved candidates
-Output: Candidate chunks with LLM relevance scores and reranked order
-What to do: Add an optional scoring pass that judges whether a retrieved chunk actually answers the query.
-Test before continuing: Compare the reranked output to the baseline output on one or two queries and verify the score changes are explainable.
+Output: Candidate chunks with LLM relevance scores and traceability preserved
+What to do: Add a scoring pass that asks the LLM to judge whether a retrieved chunk actually answers the query.
+Test before continuing: Compare the scored output to the baseline output on the trustworthy AI query and verify the retrieval scores, relevance scores, and traceability fields are all present.
 10. Dedicated Reranker
 Module(s): src/reranker.py
 Input: Query plus candidate chunks
