@@ -11,7 +11,7 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 - [x] Step 9 - LLM Relevance Scoring
 - [x] Step 10 - Dedicated Reranker
 - [x] Step 11 - Metadata Filtering
-- [ ] Step 12 - Complete RAG Pipeline
+- [x] Step 12 - Complete RAG Pipeline
 - [ ] Step 13 - Evaluation and lab_proof.md
 Summary
 Build the lab in small, independently testable steps. The notebook stays as the orchestration and inspection surface, while src/ holds reusable pipeline logic. The main change from the previous plan is an early transcription stage: the podcast must first be converted to text with Whisper, then treated as a source document alongside the PDFs.
