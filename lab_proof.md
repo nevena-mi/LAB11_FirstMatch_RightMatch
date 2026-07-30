@@ -123,3 +123,18 @@ Deterministic order: True
 Deterministic content: True
 Same object references: [True, True, True]
 
+**rag_pipeline**
+Query: What are the requirements for trustworthy AI?
+Filters: {'source_id': 'podcast'}
+Final chunk count: 5
+Chunk IDs: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0012', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0013', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000']
+Retrieval scores: [0.584923744, 0.607386887, 0.538752913, 0.501684964, 0.601132393]
+Relevance scores: [0.8, 0.9, 0.85, 0.7, 0.7]
+Rerank scores: [1.0, 0.9800728830179775, 0.9285839159333333, 0.9098652946867924, 0.8285598119333333]
+Source IDs: ['podcast', 'podcast', 'podcast', 'podcast', 'podcast']
+Text previews: ["ationalize that. We aren't just talking philosophy here. We're looking at how you take an abstract concept like fairness and turn it into, I don't know, Python code. We've got three pillars, four prin", 'to software. So bringing this all together, we started with a bridge. We trust the bridge because of physics and laws. Can we ever get there with AI? The source argues that we need to view this as a s', "ix, societal and environmental well-being. This is the first time I've really seen green AI emphasized in a foundational document like this. This is a huge issue. Training a large language model consu", 'hat the people building these things are the first line of defense. They have to be. If an engineer sees that a system is behaving unethically, they need a safe channel to report it without getting fi', "So, imagine for a second you're driving across, I don't know, a massive suspension bridge. You don't pull over halfway across, get out, and demand to see the blueprints, right? You don't interview the"]
+Traceability: [('podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'podcast', 'podcast_transcript'), ('podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'podcast', 'podcast_transcript'), ('podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0012', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'podcast', 'podcast_transcript'), ('podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0013', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'podcast', 'podcast_transcript'), ('podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'podcast', 'podcast_transcript')]
+Metadata preserved: [True, True, True, True, True]
+Stable order: True
+Stable scores: True
+
