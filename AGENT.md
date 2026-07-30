@@ -22,6 +22,8 @@ LLM Relevance Scoring
 ↓
 Reranking
 ↓
+Metadata Filtering
+↓
 LLM Response (planned)
 
 Current implementation status:
@@ -35,6 +37,7 @@ Current implementation status:
 - Step 8 is complete and validated: baseline Pinecone retrieval with stable traceability and repeated-query consistency.
 - Step 9 is complete and validated: LLM relevance scoring over baseline retrieval candidates with preserved traceability.
 - Step 10 is complete and validated: dedicated reranking over retrieved or scored chunks with preserved traceability.
+- Step 11 is complete and validated: metadata filtering over retrieved or reranked chunks with preserved traceability.
 - Later stages are not implemented yet.
 
 # Architecture
@@ -59,9 +62,11 @@ LLM Relevance Scoring
 ↓
 Reranking
 ↓
+Metadata Filtering
+↓
 LLM Response (planned)
 
-The implemented pipeline currently includes embeddings, a Pinecone vector store layer, baseline retrieval, an LLM relevance scoring pass, and a dedicated reranking layer. Later stages are intentionally deferred to keep the lab incremental and easy to reason about.
+The implemented pipeline currently includes embeddings, a Pinecone vector store layer, baseline retrieval, an LLM relevance scoring pass, a dedicated reranking layer, and a metadata filtering layer. Later stages are intentionally deferred to keep the lab incremental and easy to reason about.
 
 # Implemented Components
 
@@ -120,6 +125,12 @@ Dedicated reranking stage for already retrieved or scored chunks.
 - Traceability: preserves chunk IDs, document IDs, source IDs, document types, metadata, retrieval scores, and relevance scores when present.
 - Note: `src/reranking.py` re-exports the same API for compatibility with the notebook import path.
 
+## `src/metadata_filtering.py`
+Filters retrieved or reranked chunks using exact-match metadata constraints.
+- Purpose: keep only chunks whose traceability fields or metadata entries match the requested values.
+- Output: the original chunk objects, unchanged.
+- Traceability: preserves all chunk identity, metadata, and scoring fields by returning the same objects rather than reconstructed copies.
+
 ## Step 9 Validation result
 - A notebook validation cell was appended to score the trustworthiness query against the baseline retrieval results.
 - Local stubbed-client validation confirmed that `score_relevance()` preserves chunk IDs, document IDs, source IDs, document types, metadata, and retrieval scores.
@@ -147,6 +158,22 @@ Dedicated reranking stage for already retrieved or scored chunks.
 ## Step 10 Files changed
 - `src/reranker.py`
 - `src/reranking.py`
+- `relevance_scoring_rerankers.ipynb`
+- `implementation_plan.md`
+- `AGENT.md`
+
+## Step 11 Validation result
+- A new notebook validation cell was appended to filter the trustworthy AI reranked results using exact-match constraints.
+- Local smoke testing confirmed that `filter_chunks()` preserves chunk IDs, metadata, and object identity while returning the expected filtered subset.
+- The validation path also confirmed that repeated filtering with the same input returns the same order and metadata values.
+
+## Step 11 Implementation decisions and rationale
+- Filtering is exact-match and AND-combined across all supplied keys so the behavior stays simple and predictable.
+- The filter checks top-level traceability fields first, then falls back to the chunk metadata dictionary for source document fields.
+- The function returns the original objects unchanged so traceability and downstream references remain intact.
+
+## Step 11 Files changed
+- `src/metadata_filtering.py`
 - `relevance_scoring_rerankers.ipynb`
 - `implementation_plan.md`
 - `AGENT.md`
@@ -366,7 +393,6 @@ Each new feature is validated before the step is marked complete.
 # Future Roadmap
 
 Remaining stages:
-- metadata filtering
 - complete RAG pipeline
 - evaluation
 

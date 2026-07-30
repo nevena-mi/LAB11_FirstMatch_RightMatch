@@ -10,7 +10,7 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 - [x] Step 8 - Baseline Retrieval
 - [x] Step 9 - LLM Relevance Scoring
 - [x] Step 10 - Dedicated Reranker
-- [ ] Step 11 - Metadata Filtering
+- [x] Step 11 - Metadata Filtering
 - [ ] Step 12 - Complete RAG Pipeline
 - [ ] Step 13 - Evaluation and lab_proof.md
 Summary

@@ -108,3 +108,18 @@ Chunk IDs preserved: True
 Metadata preserved: [True, True, True]
 Deterministic ordering: True
 Deterministic scores: True
+
+**Metadata Filtering**
+Reusing reranked_one from the Step 10 validation cell.
+Before filtering: 3
+After filtering: 3
+Returned chunk IDs: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000']
+Source IDs used for filtering: podcast
+Document types used for filtering: podcast_transcript
+Filename used for filtering: The_Blueprint_For_Trustworthy_AI.mp3
+Chunk IDs preserved: True
+Metadata preserved: [True, True, True]
+Deterministic order: True
+Deterministic content: True
+Same object references: [True, True, True]
+
