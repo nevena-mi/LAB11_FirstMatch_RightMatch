@@ -1,0 +1,229 @@
+# Project Overview
+
+This project is a small educational RAG lab focused on relevance scoring and rerankers using the EU AI Act PDF, a Trustworthy AI PDF, and a podcast source.
+
+Current pipeline architecture:
+
+PDF / Audio
+↓
+Extraction
+↓
+Normalization
+↓
+Chunking
+↓
+Embeddings
+↓
+Vector Store (planned)
+↓
+Retrieval (planned)
+↓
+Reranking (planned)
+↓
+LLM Response (planned)
+
+Current implementation status:
+- Step 1 is complete: project setup, environment validation, and notebook import scaffolding.
+- Step 2 is complete: podcast preprocessing and Whisper transcription with saved transcript and metadata.
+- Step 3 is complete: PDF extraction into page-level records.
+- Step 4 is complete: normalization into a shared document schema.
+- Step 5 is complete: deterministic character-based chunking with overlap.
+- Step 6 is complete: OpenAI-based chunk embeddings with preserved traceability.
+- Later stages are not implemented yet.
+
+# Architecture
+
+Current pipeline:
+
+PDF / Audio
+↓
+Extraction
+↓
+Normalization
+↓
+Chunking
+↓
+Embeddings
+↓
+Vector Store (planned)
+↓
+Retrieval (planned)
+↓
+Reranking (planned)
+↓
+LLM Response (planned)
+
+The implemented pipeline currently stops after embeddings. The remaining stages are intentionally deferred to keep the lab incremental and easy to reason about.
+
+# Implemented Components
+
+## `src/pdf_processor.py`
+Extracts one record per PDF page.
+- Purpose: turn each source PDF into traceable page-level records.
+- Output: `ExtractedPDFPage` objects.
+- Traceability: preserves filename, source ID, document type, page number, and total pages.
+
+## `src/transcription.py`
+Transcribes the podcast audio and persists transcript artifacts.
+- Purpose: convert the podcast into text for use as a RAG source.
+- Output: `TranscriptionResult` objects.
+- Traceability: stores the transcript text and metadata including source, filename, model, language when available, duration when available, and speaker when available.
+
+## `src/normalization.py`
+Converts PDF pages and transcription results into a shared document schema.
+- Purpose: provide one common representation for later chunking and retrieval.
+- Output: `NormalizedDocument` objects.
+- Traceability: preserves upstream metadata as-is and adds a stable document identifier.
+
+## `src/chunking.py`
+Splits normalized documents into retrieval-ready chunks.
+- Purpose: create deterministic chunks from normalized documents.
+- Output: `Chunk` objects.
+- Traceability: preserves document IDs, source IDs, document types, and copied metadata, while adding chunk-specific fields.
+
+## `src/embeddings.py`
+Converts chunks into vector representations for later retrieval.
+- Purpose: turn retrieval-ready chunks into embedded records without changing their traceability fields.
+- Output: `EmbeddedChunk` objects.
+- Traceability: preserves chunk IDs, document IDs, source IDs, document types, and chunk metadata.
+
+# Embeddings
+
+The embedding layer is the bridge between chunked documents and the later retrieval stack.
+- It keeps the implementation isolated from vector databases and search logic.
+- It uses the OpenAI Embeddings API with lazy client initialization so the module stays reusable and does not require global client setup at import time.
+- The default model is `text-embedding-3-small`.
+- The layer does not truncate or alter chunk text before embedding.
+- Metadata is copied into `EmbeddedChunk` records so original traceability is preserved without mutating upstream chunk objects.
+
+## `EmbeddedChunk`
+- Purpose: represent a chunk after embedding has been added.
+- Important fields:
+  - `chunk_id`
+  - `document_id`
+  - `text`
+  - `embedding`
+  - `metadata`
+  - `source_id`
+  - `document_type`
+- Used by: `src/embeddings.py` and later vector store / retrieval stages.
+
+## Embedding functions
+- `embed_chunk(chunk)`: embeds one `Chunk` and returns one `EmbeddedChunk`.
+- `embed_chunks(chunks)`: embeds a list of chunks in order and returns a list of `EmbeddedChunk` objects.
+- Both functions preserve chunk identity and metadata.
+
+## Validation result
+- Validation was run in the notebook with normalized PDF and transcript documents, then chunking, then embeddings.
+- The smoke test produced 24 embedded chunks.
+- The embedding dimension was 1536 for every vector.
+- The first five embedding values were printed successfully during validation.
+- Chunk IDs and document IDs were unchanged after embedding.
+- Metadata was preserved exactly from the chunk objects.
+
+## Implementation decisions and rationale
+- Lazy OpenAI client creation was used so the module stays import-safe and test-friendly.
+- The embedding model is configurable, but the default remains `text-embedding-3-small` for simplicity and consistency.
+- The embedding layer remains intentionally small and does not introduce batching abstractions beyond the minimal `embed_chunks` helper.
+
+# Data Models
+
+## `ExtractedPDFPage`
+- Purpose: represent one extracted PDF page.
+- Important fields:
+  - `text`
+  - `filename`
+  - `source_id`
+  - `document_type`
+  - `page_number`
+  - `metadata`
+- Used by: `src/pdf_processor.py` and `src/normalization.py`.
+
+## `TranscriptionResult`
+- Purpose: represent a completed podcast transcription plus saved file paths.
+- Important fields:
+  - `text`
+  - `metadata`
+  - `transcript_path`
+  - `metadata_path`
+- Used by: `src/transcription.py` and `src/normalization.py`.
+
+## `NormalizedDocument`
+- Purpose: shared document format for later pipeline stages.
+- Important fields:
+  - `document_id`
+  - `text`
+  - `metadata`
+  - `source_id`
+  - `document_type`
+- Used by: `src/normalization.py` and `src/chunking.py`.
+
+## `Chunk`
+- Purpose: retrieval-ready slice of a normalized document.
+- Important fields:
+  - `chunk_id`
+  - `text`
+  - `metadata`
+  - `source_id`
+  - `document_type`
+  - `document_id`
+- Used by: `src/chunking.py` and later embedding / retrieval stages.
+
+# Design Decisions
+
+- Use dataclasses for the main document types.
+- Use `slots=True` where appropriate to keep the objects lightweight and explicit.
+- Use deterministic IDs for normalized documents and chunks.
+- Use deterministic behavior for embedded chunk ordering and identity preservation.
+- Preserve source traceability across every stage.
+- Copy metadata into chunk objects instead of mutating upstream metadata.
+- Copy metadata into embedded chunk objects instead of mutating upstream chunk metadata.
+- Use character-based chunking with overlap to keep the implementation simple and transparent.
+- Append notebook cells instead of modifying previous executed cells.
+- Build the project in small incremental steps.
+- Update `implementation_plan.md` only after successful validation of a step.
+
+# Notebook Conventions
+
+- Existing notebook cells should never be rewritten.
+- New functionality should be appended as new cells.
+- Previous outputs should be preserved whenever possible.
+- The notebook serves as a learning record as well as a smoke-test surface.
+
+# Validation Strategy
+
+Each new feature is validated before the step is marked complete.
+- Environment checks verify required API keys are present without exposing values.
+- Podcast preprocessing is validated by checking that the output file is smaller and transcribable.
+- Transcription is validated by confirming transcript and metadata files are written.
+- PDF extraction is validated by checking page counts, metadata, and sample text output.
+- Normalization is validated by comparing PDF and transcript objects in the same schema.
+- Chunking is validated by checking chunk counts, chunk IDs, text previews, and metadata preservation.
+- Embeddings are validated by checking vector dimensions, model choice, chunk identity preservation, and metadata preservation.
+
+# Coding Style
+
+- Keep modules small and focused.
+- Use clear docstrings.
+- Prefer type hints.
+- Favor deterministic behavior.
+- Avoid unnecessary dependencies.
+- Optimize for educational readability over abstraction or performance.
+
+# Future Roadmap
+
+Remaining stages:
+- vector database
+- retrieval
+- reranking
+- evaluation
+
+# Instructions for Future Codex Sessions
+
+- Always read `AGENT.md` before making changes.
+- Preserve the current architecture and step order.
+- Prefer incremental changes over broad refactors.
+- Avoid rewriting working code unless a compatibility fix is required.
+- Avoid unnecessary refactoring.
+- Preserve notebook history by appending new cells instead of replacing old ones.
+- Keep `implementation_plan.md` synchronized with completed work.

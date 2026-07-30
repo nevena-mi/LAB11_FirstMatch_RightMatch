@@ -36,4 +36,28 @@ podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3
  EU AI Act page              Podcast transcript
 
 
- 
+**chunking**
+PDF chunks: 5
+Transcript chunks: 19
+REGUL A TION (EU) 2024/1689 OF THE EUR OPEAN P ARLIAMENT AND OF THE CO UNCIL
+of 13 June 2024
+laying do wn har monised r ules on ar tif icial intelligence and amending Regulations (EC) No 300/2008, 
+(EU) No 167/2013, (EU) No 168/2013, (EU) 2018/858, (EU) 2018/1139 and (EU) 2019/2144 and 
+Directiv es 
+{'filename': 'eu_ai_act.pdf', 'source_id': 'eu_ai_act', 'document_type': 'eu_ai_act', 'page_number': 1, 'total_pages': 144, 'document_id': 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1', 'chunk_index': 0, 'chunk_start_char': 0, 'chunk_end_char': 1000, 'chunk_size': 1000, 'chunk_overlap': 100}
+['eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0000', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0001', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0002', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0003', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0004']
+So, imagine for a second you're driving across, I don't know, a massive suspension bridge. You don't pull over halfway across, get out, and demand to see the blueprints, right? You don't interview the welding crew. No, you just trust it. You just drive. You trust the bridge. You trust the engineerin
+{'source': 'podcast', 'filename': 'The_Blueprint_For_Trustworthy_AI.mp3', 'transcription_model': 'whisper-1', 'language': 'english', 'duration': 937.52001953125, 'speaker': None, 'document_id': 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'chunk_index': 0, 'chunk_start_char': 0, 'chunk_end_char': 1000, 'chunk_size': 1000, 'chunk_overlap': 100}
+['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000', 'podcast:podcast_tr
+
+**embeding**
+Total embedded chunks: 24
+Embedding model used: text-embedding-3-small
+Embedding vector length: 1536
+First five embedding values: [0.0211181640625, 0.01444244384765625, 0.01279449462890625, -0.0029315948486328125, -0.001064300537109375]
+First chunk ID: eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0000
+First document ID: eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1
+First chunk metadata: {'filename': 'eu_ai_act.pdf', 'source_id': 'eu_ai_act', 'document_type': 'eu_ai_act', 'page_number': 1, 'total_pages': 144, 'document_id': 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1', 'chunk_index': 0, 'chunk_start_char': 0, 'chunk_end_char': 1000, 'chunk_size': 1000, 'chunk_overlap': 100}
+True
+
+

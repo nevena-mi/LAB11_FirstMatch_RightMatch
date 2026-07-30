@@ -5,7 +5,7 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 - [x] Step 3 - PDF Processing
 - [ ] Step 4 - Common Document Representation
 - [x] Step 5 - Chunking
-- [ ] Step 6 - Embeddings
+- [x] Step 6 - Embeddings
 - [ ] Step 7 - Vector Store
 - [ ] Step 8 - Baseline Retrieval
 - [ ] Step 9 - LLM Relevance Scoring
