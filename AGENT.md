@@ -20,6 +20,8 @@ Retrieval
 ↓
 LLM Relevance Scoring
 ↓
+Reranking
+↓
 LLM Response (planned)
 
 Current implementation status:
@@ -32,6 +34,7 @@ Current implementation status:
 - Step 7 is complete and validated: Pinecone vector store integration, metadata sanitization, and notebook verification.
 - Step 8 is complete and validated: baseline Pinecone retrieval with stable traceability and repeated-query consistency.
 - Step 9 is complete and validated: LLM relevance scoring over baseline retrieval candidates with preserved traceability.
+- Step 10 is complete and validated: dedicated reranking over retrieved or scored chunks with preserved traceability.
 - Later stages are not implemented yet.
 
 # Architecture
@@ -54,9 +57,11 @@ Retrieval
 ↓
 LLM Relevance Scoring
 ↓
+Reranking
+↓
 LLM Response (planned)
 
-The implemented pipeline currently includes embeddings, a Pinecone vector store layer, baseline retrieval, and an LLM relevance scoring pass. Later stages are intentionally deferred to keep the lab incremental and easy to reason about.
+The implemented pipeline currently includes embeddings, a Pinecone vector store layer, baseline retrieval, an LLM relevance scoring pass, and a dedicated reranking layer. Later stages are intentionally deferred to keep the lab incremental and easy to reason about.
 
 # Implemented Components
 
@@ -108,18 +113,43 @@ Scores baseline retrieval results with an LLM while keeping traceability intact.
 - Output: `ScoredChunk` objects.
 - Traceability: preserves the original chunk and document identifiers, source IDs, document types, metadata, and the original Pinecone similarity score.
 
-## Validation result
+## `src/reranker.py`
+Dedicated reranking stage for already retrieved or scored chunks.
+- Purpose: reorder candidates using a deterministic local cross-encoder-style score.
+- Output: `RerankedChunk` objects.
+- Traceability: preserves chunk IDs, document IDs, source IDs, document types, metadata, retrieval scores, and relevance scores when present.
+- Note: `src/reranking.py` re-exports the same API for compatibility with the notebook import path.
+
+## Step 9 Validation result
 - A notebook validation cell was appended to score the trustworthiness query against the baseline retrieval results.
 - Local stubbed-client validation confirmed that `score_relevance()` preserves chunk IDs, document IDs, source IDs, document types, metadata, and retrieval scores.
 - The validation path also confirmed that relevance scores and optional reasoning are returned together.
 - Repeated calls with the same input produced the same chunk order and the same parsed scores in the local validation check.
 
-## Implementation decisions and rationale
+## Step 9 Implementation decisions and rationale
 - The OpenAI Responses API was used with structured JSON output so the scoring layer stays easy to parse and debug.
 - The scoring model is configurable, with `gpt-4o-mini` as the default for the lab.
 - The model is instructed to return scores from 0.0 to 1.0 to keep the output simple and comparable.
 - The output preserves the baseline retrieval order rather than reordering chunks, because reranking is a separate later step.
 - `seed=42` and `temperature=0` were chosen to keep repeated runs as stable as possible for an educational lab.
+
+## Step 10 Validation result
+- A new notebook validation cell was appended to rerank the trustworthy AI query using existing retrieval or scored chunks.
+- Local smoke testing confirmed reranked output can change ordering when the query-chunk match is stronger, while preserving IDs, metadata, and traceability fields.
+- Repeated reranking runs on the same input produced stable chunk order and stable rerank scores.
+
+## Step 10 Implementation decisions and rationale
+- The reranker is deterministic and local-only so the step demonstrates the architecture without downloading or running an additional model.
+- The scoring logic treats the query and chunk text together, which keeps the implementation close to a cross-encoder shape while remaining lightweight.
+- When relevance scores from Step 9 are available, the reranker can use them as an additional signal without depending on Pinecone.
+- `src/reranking.py` is a compatibility re-export so the notebook can import the dedicated reranker cleanly.
+
+## Step 10 Files changed
+- `src/reranker.py`
+- `src/reranking.py`
+- `relevance_scoring_rerankers.ipynb`
+- `implementation_plan.md`
+- `AGENT.md`
 
 # Embeddings
 
@@ -271,6 +301,22 @@ The Pinecone layer is kept intentionally small and env-driven.
   - `reasoning`
 - Used by: `src/relevance_scoring.py` and the notebook validation cell.
 
+## `RerankedChunk`
+- Purpose: retrieval result after dedicated reranking.
+- Important fields:
+  - `chunk_id`
+  - `document_id`
+  - `text`
+  - `metadata`
+  - `source_id`
+  - `document_type`
+  - `retrieval_score`
+  - `relevance_score`
+  - `rerank_score`
+  - `rank`
+  - `reasoning`
+- Used by: `src/reranker.py`, `src/reranking.py`, and the notebook validation cell.
+
 # Design Decisions
 
 - Use dataclasses for the main document types.
@@ -306,6 +352,7 @@ Each new feature is validated before the step is marked complete.
 - Embeddings are validated by checking vector dimensions, model choice, chunk identity preservation, and metadata preservation.
 - Pinecone integration is validated by confirming index creation, successful upserts, matching retrieved IDs, and preserved metadata.
 - LLM relevance scoring is validated by checking the returned relevance scores, preserved retrieval scores, traceability fields, and repeatability on the same query.
+- Dedicated reranking is validated by checking reordered results, preserved retrieval and relevance scores, metadata preservation, and deterministic repeated runs.
 
 # Coding Style
 
@@ -319,7 +366,8 @@ Each new feature is validated before the step is marked complete.
 # Future Roadmap
 
 Remaining stages:
-- dedicated reranker
+- metadata filtering
+- complete RAG pipeline
 - evaluation
 
 # Instructions for Future Codex Sessions

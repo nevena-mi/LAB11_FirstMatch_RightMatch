@@ -75,3 +75,36 @@ laying do wn har monised r ules on ar tif icial intelligence and amending Regula
 (E
 
 
+**scoring**
+Reusing baseline retrieval results from the previous retrieval cell.
+Query: What are the requirements for trustworthy AI?
+Original count: 3
+Scored count: 3
+Original ranking: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002']
+Scored order: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002']
+Original scores: [0.607386887, 0.601132393, 0.584923744]
+Retrieval scores: [0.607386887, 0.601132393, 0.584923744]
+LLM relevance scores: [0.9, 0.7, 1.0]
+Chunk IDs preserved: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002']
+Document IDs preserved: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3']
+Source IDs preserved: ['podcast', 'podcast', 'podcast']
+Text previews: ['to software. So bringing this all together, we started with a bridge. We trust the bridge because of physics and laws. Can we ever get there with AI? The source argues that we need to view this as a s', "So, imagine for a second you're driving across, I don't know, a massive suspension bridge. You don't pull over halfway across, get out, and demand to see the blueprints, right? You don't interview the", "ationalize that. We aren't just talking philosophy here. We're looking at how you take an abstract concept like fairness and turn it into, I don't know, Python code. We've got three pillars, four prin"]
+Optional reasoning: ['This chunk discusses the socio-technical aspects of trustworthy AI, emphasizing the importance of transparency and human oversight, which are key requirements for trustworthy AI.', 'This chunk introduces the concept of trust in AI systems compared to traditional infrastructure, setting the stage for discussing the requirements for trustworthy AI.', 'This chunk explicitly outlines the three components of trustworthy AI and mentions concrete requirements, making it highly relevant to the query.']
+Deterministic scoring IDs: True
+Deterministic scoring metadata: [True, True, True]
+
+
+**reranker**
+Reusing scored_results from the Step 9 validation cell.
+Query: What are the requirements for trustworthy AI?
+Original chunk order: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002']
+Reranked chunk order: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000']
+Retrieval scores: [0.607386887, 0.601132393, 0.584923744]
+Rerank scores: [1.0, 0.9800728830179775, 0.8285598119333333]
+Chunk IDs: ['podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0002', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0017', 'podcast:podcast_transcript:The_Blueprint_For_Trustworthy_AI.mp3:chunk-0000']
+Source IDs: ['podcast', 'podcast', 'podcast']
+Text previews: ["ationalize that. We aren't just talking philosophy here. We're looking at how you take an abstract concept like fairness and turn it into, I don't know, Python code. We've got three pillars, four prin", 'to software. So bringing this all together, we started with a bridge. We trust the bridge because of physics and laws. Can we ever get there with AI? The source argues that we need to view this as a s', "So, imagine for a second you're driving across, I don't know, a massive suspension bridge. You don't pull over halfway across, get out, and demand to see the blueprints, right? You don't interview the"]
+Chunk IDs preserved: True
+Metadata preserved: [True, True, True]
+Deterministic ordering: True
+Deterministic scores: True
