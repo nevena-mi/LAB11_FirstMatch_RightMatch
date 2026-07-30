@@ -7,7 +7,7 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 - [x] Step 5 - Chunking
 - [x] Step 6 - Embeddings
 - [x] Step 7 - Vector Store
-- [ ] Step 8 - Baseline Retrieval
+- [x] Step 8 - Baseline Retrieval
 - [ ] Step 9 - LLM Relevance Scoring
 - [ ] Step 10 - Dedicated Reranker
 - [ ] Step 11 - Metadata Filtering

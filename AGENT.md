@@ -16,7 +16,7 @@ Embeddings
 ↓
 Vector Store
 ↓
-Retrieval (planned)
+Retrieval
 ↓
 Reranking (planned)
 ↓
@@ -30,6 +30,7 @@ Current implementation status:
 - Step 5 is complete: deterministic character-based chunking with overlap.
 - Step 6 is complete: OpenAI-based chunk embeddings with preserved traceability.
 - Step 7 is complete and validated: Pinecone vector store integration, metadata sanitization, and notebook verification.
+- Step 8 is complete and validated: baseline Pinecone retrieval with stable traceability and repeated-query consistency.
 - Later stages are not implemented yet.
 
 # Architecture
@@ -48,13 +49,13 @@ Embeddings
 ↓
 Vector Store
 ↓
-Retrieval (planned)
+Retrieval
 ↓
 Reranking (planned)
 ↓
 LLM Response (planned)
 
-The implemented pipeline currently includes embeddings and a Pinecone vector store layer. Retrieval and later stages are intentionally deferred to keep the lab incremental and easy to reason about.
+The implemented pipeline currently includes embeddings, a Pinecone vector store layer, and baseline retrieval. Reranking and later stages are intentionally deferred to keep the lab incremental and easy to reason about.
 
 # Implemented Components
 
@@ -93,6 +94,12 @@ Wraps Pinecone index creation, upserts, and similarity queries.
 - Purpose: store embedded chunks and verify vectors can be retrieved by similarity.
 - Output: Pinecone upsert/query responses.
 - Traceability: stores `document_id`, `source_id`, `document_type`, `text`, and copied chunk metadata alongside each vector.
+
+## `src/retrieval.py`
+Wraps query embedding and Pinecone similarity search for baseline retrieval.
+- Purpose: embed a user query and return the most relevant stored chunks.
+- Output: `RetrievedChunk` objects.
+- Traceability: preserves `chunk_id`, `document_id`, `source_id`, `document_type`, `text`, `metadata`, and similarity score.
 
 # Embeddings
 
@@ -160,12 +167,18 @@ The Pinecone layer is kept intentionally small and env-driven.
 - `upsert_chunks(chunks)`: stores multiple embedded chunks.
 - `query_index(query_embedding, top_k=5)`: runs a similarity query and returns top matches with metadata.
 
+## Retrieval functions
+- `retrieve(query_embedding, top_k=5)`: queries Pinecone with a dense vector and returns traceable matches.
+- `retrieve_query(query_text, top_k=5)`: embeds the query and retrieves the top stored chunks.
+
 ## Validation result
 - Notebook validation was executed successfully.
 - Pinecone index: `ironhack-rag`.
 - Vectors uploaded: `24`.
 - Query returned the expected chunk IDs.
 - `document_id` and `source_id` metadata were preserved in the returned matches.
+- Example query: `What are the requirements for trustworthy AI?`
+- Top results were retrieved from the trustworthy AI podcast transcript.
 
 ## Implementation decisions and rationale
 - The wrapper keeps Pinecone-specific logic isolated from embeddings and retrieval.
@@ -173,11 +186,14 @@ The Pinecone layer is kept intentionally small and env-driven.
 - A default cosine metric was used for the dense vector index because the pipeline is using OpenAI dense embeddings.
 - A short sleep is used in the notebook validation cell to reduce the chance of querying before Pinecone has indexed the upserted vectors.
 - Metadata sanitization removes `None` values before upsert so Pinecone accepts the payload while preserving all usable traceability fields.
+- Baseline retrieval stays separate from reranking so the lab can validate retrieval quality before introducing more complex ranking logic.
 
 ## Files changed
+- `src/retrieval.py`
+- `relevance_scoring_rerankers.ipynb`
+- `implementation_plan.md`
 - `src/vector_store.py`
 - `requirements.txt`
-- `relevance_scoring_rerankers.ipynb`
 - `AGENT.md`
 
 # Data Models
@@ -270,7 +286,6 @@ Each new feature is validated before the step is marked complete.
 # Future Roadmap
 
 Remaining stages:
-- retrieval
 - reranking
 - evaluation
 
