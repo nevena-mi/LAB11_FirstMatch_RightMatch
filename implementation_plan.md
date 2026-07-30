@@ -2,7 +2,7 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 ## Checklist
 - [x] Step 1 - Project Setup
 - [x] Step 2 - Podcast Transcription
-- [ ] Step 3 - PDF Processing
+- [x] Step 3 - PDF Processing
 - [ ] Step 4 - Common Document Representation
 - [ ] Step 5 - Chunking
 - [ ] Step 6 - Embeddings
@@ -43,6 +43,20 @@ Output: A single normalized document structure for all sources
 What to do: Convert the podcast transcript and PDF pages into the same schema so later stages do not care about the original source type.
 Recommended schema: text, metadata, source_id, document_type, chunkable_text or equivalent
 Test before continuing: Load one podcast record and one PDF record, normalize both, and confirm they expose the same fields and compatible metadata keys.
+
+## Completed
+
+### Document normalization layer
+- Added NormalizedDocument dataclass as common representation.
+- Implemented normalization for:
+  - extracted PDF pages
+  - podcast transcription results
+- Verified that different document sources produce the same schema.
+
+## Next
+- Implement document chunking layer.
+- Split normalized documents into smaller retrieval units.
+
 5. Chunking
 Module(s): src/chunking.py
 Input: Normalized documents
