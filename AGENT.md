@@ -39,6 +39,7 @@ Current implementation status:
 - Step 10 is complete and validated: dedicated reranking over retrieved or scored chunks with preserved traceability.
 - Step 11 is complete and validated: metadata filtering over retrieved or reranked chunks with preserved traceability.
 - Step 12 is complete and validated: thin end-to-end orchestration from retrieval through metadata filtering with preserved traceability.
+- Step 13 is complete: qualitative evaluation summary added from the recorded notebook outputs.
 - Later stages are not implemented yet.
 
 # Architecture
@@ -200,6 +201,32 @@ Thin orchestration layer for the completed pipeline stages.
 - `relevance_scoring_rerankers.ipynb`
 - `implementation_plan.md`
 - `AGENT.md`
+
+## Step 13 Evaluation summary
+- Added `evaluation.md` as a concise record of the observed pipeline behavior from the existing validation cells.
+- The summary covers baseline retrieval, LLM relevance scoring, dedicated reranking, metadata filtering, and the complete pipeline.
+- The write-up stays qualitative and does not introduce new metrics, datasets, or benchmark claims.
+- Observed behavior recorded in the notebook:
+  - baseline retrieval for the trustworthy-AI query returned podcast chunks with stable similarity scores
+  - LLM relevance scoring preserved order and traceability while adding relevance scores
+  - reranking changed the order of the same chunks while preserving IDs and metadata
+  - metadata filtering preserved the reranked order of the surviving chunks
+  - the complete pipeline executed in the expected stage order and remained stable across repeated runs
+- Limitations documented:
+  - small evaluation set
+  - deterministic local reranker instead of a production cross-encoder
+  - no automated benchmark dataset
+  - no generated-answer evaluation yet
+
+## Step 13 Files changed
+- `evaluation.md`
+- `AGENT.md`
+- `implementation_plan.md`
+
+## Final pipeline status
+- The repository now contains a complete, modular RAG lab through evaluation.
+- The pipeline stages are implemented as separate source modules with notebook validation cells preserving the step-by-step learning record.
+- `lab_proof.md` remains untouched as the manual proof artifact.
 
 # Embeddings
 

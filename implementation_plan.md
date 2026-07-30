@@ -12,7 +12,7 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 - [x] Step 10 - Dedicated Reranker
 - [x] Step 11 - Metadata Filtering
 - [x] Step 12 - Complete RAG Pipeline
-- [ ] Step 13 - Evaluation and lab_proof.md
+- [x] Step 13 - Evaluation and lab_proof.md
 Summary
 Build the lab in small, independently testable steps. The notebook stays as the orchestration and inspection surface, while src/ holds reusable pipeline logic. The main change from the previous plan is an early transcription stage: the podcast must first be converted to text with Whisper, then treated as a source document alongside the PDFs.
 Step-by-Step Order
@@ -106,11 +106,11 @@ Output: Final answer plus supporting evidence chunks
 What to do: Wire together retrieval, optional scoring, reranking, and answer generation into one callable pipeline.
 Test before continuing: Run a full end-to-end query and verify the returned answer includes cited evidence that can be traced to the retrieved chunks.
 13. Evaluation and lab_proof.md
-Module(s): notebook, lab_proof.md
-Input: Baseline and reranked outputs
-Output: Completed proof document with query, retrieved evidence, final answer, and limitation
-What to do: Compare baseline vs improved retrieval, document the evidence used, and write up one failure case or limitation.
-Test before continuing: Fill out lab_proof.md for at least one EU AI Act question and one podcast-derived question, then verify every claim is backed by retrieved source text.
+Module(s): evaluation.md, notebook, lab_proof.md
+Input: Baseline, scored, reranked, filtered, and pipeline outputs
+Output: Completed evaluation summary with observed behavior and limitations
+What to do: Compare baseline vs improved retrieval, document the evidence used, and summarize the observed pipeline behavior without inventing metrics.
+Test before continuing: Verify the evaluation summary matches the existing notebook outputs and that `lab_proof.md` remains unchanged.
 Recommended Notebook vs src/ Split
 Notebook should contain:setup and environment checks
 exploratory runs
