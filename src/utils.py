@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Iterable
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_REQUIRED_ENV_VARS = ("OPENAI_API_KEY", "COHERE_API_KEY", "PINECONE_KEY")
+DEFAULT_REQUIRED_ENV_VARS = ("OPENAI_API_KEY", "COHERE_API_KEY", "PINECONE_API_KEY")
 
 
 def load_environment(dotenv_path: Path | None = None) -> bool:

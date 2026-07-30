@@ -3,10 +3,10 @@ Revised Implementation Plan: Podcast + PDF RAG Lab
 - [x] Step 1 - Project Setup
 - [x] Step 2 - Podcast Transcription
 - [x] Step 3 - PDF Processing
-- [ ] Step 4 - Common Document Representation
+- [x] Step 4 - Common Document Representation
 - [x] Step 5 - Chunking
 - [x] Step 6 - Embeddings
-- [ ] Step 7 - Vector Store
+- [x] Step 7 - Vector Store
 - [ ] Step 8 - Baseline Retrieval
 - [ ] Step 9 - LLM Relevance Scoring
 - [ ] Step 10 - Dedicated Reranker
@@ -70,7 +70,7 @@ Output: Embedding vectors for chunks and queries
 What to do: Generate embeddings for all chunks and define the same embedding path for future queries.
 Test before continuing: Embed a small sample of chunks and a sample query, verify vector shapes/types, and confirm repeated calls are stable.
 7. Vector Store
-Module(s): src/vectorstore.py
+Module(s): src/vector_store.py
 Input: Embedded chunks with metadata
 Output: Stored vectors and retrieval-ready records in Pinecone
 What to do: Upsert chunk embeddings into Pinecone with their metadata and retrieval IDs.

@@ -14,7 +14,7 @@ Chunking
 ↓
 Embeddings
 ↓
-Vector Store (planned)
+Vector Store
 ↓
 Retrieval (planned)
 ↓
@@ -29,6 +29,7 @@ Current implementation status:
 - Step 4 is complete: normalization into a shared document schema.
 - Step 5 is complete: deterministic character-based chunking with overlap.
 - Step 6 is complete: OpenAI-based chunk embeddings with preserved traceability.
+- Step 7 is complete and validated: Pinecone vector store integration, metadata sanitization, and notebook verification.
 - Later stages are not implemented yet.
 
 # Architecture
@@ -45,7 +46,7 @@ Chunking
 ↓
 Embeddings
 ↓
-Vector Store (planned)
+Vector Store
 ↓
 Retrieval (planned)
 ↓
@@ -53,7 +54,7 @@ Reranking (planned)
 ↓
 LLM Response (planned)
 
-The implemented pipeline currently stops after embeddings. The remaining stages are intentionally deferred to keep the lab incremental and easy to reason about.
+The implemented pipeline currently includes embeddings and a Pinecone vector store layer. Retrieval and later stages are intentionally deferred to keep the lab incremental and easy to reason about.
 
 # Implemented Components
 
@@ -86,6 +87,12 @@ Converts chunks into vector representations for later retrieval.
 - Purpose: turn retrieval-ready chunks into embedded records without changing their traceability fields.
 - Output: `EmbeddedChunk` objects.
 - Traceability: preserves chunk IDs, document IDs, source IDs, document types, and chunk metadata.
+
+## `src/vector_store.py`
+Wraps Pinecone index creation, upserts, and similarity queries.
+- Purpose: store embedded chunks and verify vectors can be retrieved by similarity.
+- Output: Pinecone upsert/query responses.
+- Traceability: stores `document_id`, `source_id`, `document_type`, `text`, and copied chunk metadata alongside each vector.
 
 # Embeddings
 
@@ -125,6 +132,53 @@ The embedding layer is the bridge between chunked documents and the later retrie
 - Lazy OpenAI client creation was used so the module stays import-safe and test-friendly.
 - The embedding model is configurable, but the default remains `text-embedding-3-small` for simplicity and consistency.
 - The embedding layer remains intentionally small and does not introduce batching abstractions beyond the minimal `embed_chunks` helper.
+
+# Vector Store
+
+The Pinecone layer is kept intentionally small and env-driven.
+- It uses the current Pinecone Python SDK.
+- It reads all Pinecone settings from environment variables only.
+- The API key can come from `PINECONE_API_KEY` or the existing project alias `PINECONE_KEY`.
+- The index name, cloud, and region come from `PINECONE_INDEX_NAME`, `PINECONE_CLOUD`, and `PINECONE_REGION`.
+- The code creates a serverless index when needed and then upserts dense vectors with cosine similarity.
+- Each stored record uses the chunk ID as the Pinecone vector ID.
+- Metadata is copied from the chunk and augmented with document traceability fields, without mutating the source object.
+
+## `PineconeConfig`
+- Purpose: group the required Pinecone settings read from the environment.
+- Important fields:
+  - `api_key`
+  - `index_name`
+  - `cloud`
+  - `region`
+- Used by: `src/vector_store.py` for index creation and access.
+
+## Vector store functions
+- `create_index_if_needed(dimension)`: creates the configured index if it does not already exist.
+- `get_index(index_name=None)`: returns a Pinecone index handle.
+- `upsert_chunk(chunk)`: stores one embedded chunk.
+- `upsert_chunks(chunks)`: stores multiple embedded chunks.
+- `query_index(query_embedding, top_k=5)`: runs a similarity query and returns top matches with metadata.
+
+## Validation result
+- Notebook validation was executed successfully.
+- Pinecone index: `ironhack-rag`.
+- Vectors uploaded: `24`.
+- Query returned the expected chunk IDs.
+- `document_id` and `source_id` metadata were preserved in the returned matches.
+
+## Implementation decisions and rationale
+- The wrapper keeps Pinecone-specific logic isolated from embeddings and retrieval.
+- Configuration is fully environment-driven to avoid hardcoding deployment details.
+- A default cosine metric was used for the dense vector index because the pipeline is using OpenAI dense embeddings.
+- A short sleep is used in the notebook validation cell to reduce the chance of querying before Pinecone has indexed the upserted vectors.
+- Metadata sanitization removes `None` values before upsert so Pinecone accepts the payload while preserving all usable traceability fields.
+
+## Files changed
+- `src/vector_store.py`
+- `requirements.txt`
+- `relevance_scoring_rerankers.ipynb`
+- `AGENT.md`
 
 # Data Models
 
@@ -175,9 +229,11 @@ The embedding layer is the bridge between chunked documents and the later retrie
 - Use `slots=True` where appropriate to keep the objects lightweight and explicit.
 - Use deterministic IDs for normalized documents and chunks.
 - Use deterministic behavior for embedded chunk ordering and identity preservation.
+- Use deterministic Pinecone vector IDs based on chunk IDs.
 - Preserve source traceability across every stage.
 - Copy metadata into chunk objects instead of mutating upstream metadata.
 - Copy metadata into embedded chunk objects instead of mutating upstream chunk metadata.
+- Copy metadata into Pinecone vectors instead of mutating source objects.
 - Use character-based chunking with overlap to keep the implementation simple and transparent.
 - Append notebook cells instead of modifying previous executed cells.
 - Build the project in small incremental steps.
@@ -200,6 +256,7 @@ Each new feature is validated before the step is marked complete.
 - Normalization is validated by comparing PDF and transcript objects in the same schema.
 - Chunking is validated by checking chunk counts, chunk IDs, text previews, and metadata preservation.
 - Embeddings are validated by checking vector dimensions, model choice, chunk identity preservation, and metadata preservation.
+- Pinecone integration is validated by confirming index creation, successful upserts, matching retrieved IDs, and preserved metadata.
 
 # Coding Style
 
@@ -213,7 +270,6 @@ Each new feature is validated before the step is marked complete.
 # Future Roadmap
 
 Remaining stages:
-- vector database
 - retrieval
 - reranking
 - evaluation

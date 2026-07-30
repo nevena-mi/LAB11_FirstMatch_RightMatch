@@ -61,3 +61,17 @@ First chunk metadata: {'filename': 'eu_ai_act.pdf', 'source_id': 'eu_ai_act', 'd
 True
 
 
+**vector_store**
+Index name: ironhack-rag
+Uploaded vectors: 24
+Upsert response: UpsertResponse(upserted_count=24)
+['eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0000', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0003', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1:chunk-0001']
+[1.00035727, 0.714134574, 0.695881307]
+['eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1', 'eu_ai_act:eu_ai_act:eu_ai_act.pdf:page-1']
+['eu_ai_act', 'eu_ai_act', 'eu_ai_act']
+REGUL A TION (EU) 2024/1689 OF THE EUR OPEAN P ARLIAMENT AND OF THE CO UNCIL
+of 13 June 2024
+laying do wn har monised r ules on ar tif icial intelligence and amending Regulations (EC) No 300/2008, 
+(E
+
+
